@@ -90,12 +90,20 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
+        /* Les deux boutons OUI ont exactement les mêmes propriétés */
         .btn-oui {
             background: #00b894;
             color: white;
             position: absolute;
             font-size: 2em;
             padding: 30px 80px;
+            /* Taille fixe identique pour les deux */
+            width: 240px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-origin: center;
         }
 
         #oui1 { top: 20%; left: 20%; }
@@ -243,7 +251,7 @@
             'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=300&h=300&fit=crop'  // Surprise
         ];
 
-        // Faire fuir les boutons OUI
+        // Faire fuir les boutons OUI - VERSION ULTRA RAPIDE
         document.addEventListener('mousemove', (e) => {
             ouiButtons.forEach(btn => {
                 const rect = btn.getBoundingClientRect();
@@ -254,22 +262,26 @@
                 const distY = e.clientY - btnY;
                 const distance = Math.sqrt(distX * distX + distY * distY);
                 
-                // Si la souris est proche (150px), fuir
-                if (distance < 150) {
-                    const moveX = (distX / distance) * -100;
-                    const moveY = (distY / distance) * -100;
+                // Détection à 250px (au lieu de 150px) + fuite de 250px (au lieu de 100px)
+                if (distance < 250) {
+                    // Calculer la direction de fuite (vecteur normalisé * distance de fuite)
+                    const escapeDistance = 250; // Distance de fuite augmentée
+                    const moveX = (distX / distance) * -escapeDistance;
+                    const moveY = (distY / distance) * -escapeDistance;
                     
                     let newX = rect.left + moveX;
                     let newY = rect.top + moveY;
                     
-                    // Limites de l'écran
-                    newX = Math.max(10, Math.min(window.innerWidth - rect.width - 10, newX));
-                    newY = Math.max(10, Math.min(window.innerHeight - rect.height - 10, newY));
+                    // Limites de l'écran avec marge de sécurité
+                    const margin = 10;
+                    newX = Math.max(margin, Math.min(window.innerWidth - rect.width - margin, newX));
+                    newY = Math.max(margin, Math.min(window.innerHeight - rect.height - margin, newY));
                     
+                    // Transition ultra rapide (0.1s au lieu de 0.2s)
                     btn.style.position = 'fixed';
                     btn.style.left = newX + 'px';
                     btn.style.top = newY + 'px';
-                    btn.style.transition = 'all 0.2s ease-out';
+                    btn.style.transition = 'all 0.1s ease-out';
                 }
             });
         });
