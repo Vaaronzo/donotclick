@@ -19,28 +19,45 @@
             position: relative;
         }
 
-        /* Cœurs flottants en arrière-plan */
-        .hearts {
+        /* Photos flottantes en arrière-plan */
+        .floating-photos {
             position: fixed;
             width: 100%;
             height: 100%;
             overflow: hidden;
             z-index: 0;
+            pointer-events: none;
         }
 
-        .heart {
+        .floating-photo {
             position: absolute;
-            font-size: 20px;
-            color: rgba(255, 255, 255, 0.6);
-            animation: float 10s infinite linear;
-            bottom: -100px;
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 3px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: floatUp 12s infinite linear;
+            bottom: -150px;
+            opacity: 0.8;
         }
 
-        @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        @keyframes floatUp {
+            0% { 
+                transform: translateY(0) rotate(0deg) scale(0.8); 
+                opacity: 0; 
+            }
+            10% { 
+                opacity: 0.9; 
+                transform: scale(1);
+            }
+            90% { 
+                opacity: 0.9; 
+            }
+            100% { 
+                transform: translateY(-110vh) rotate(360deg) scale(0.8); 
+                opacity: 0; 
+            }
         }
 
         .container {
@@ -61,6 +78,10 @@
             margin-bottom: 50px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
             animation: pulse 2s infinite;
+            background: rgba(255,255,255,0.3);
+            padding: 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
         }
 
         @keyframes pulse {
@@ -90,20 +111,19 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        /* Les deux boutons OUI ont exactement les mêmes propriétés */
         .btn-oui {
             background: #00b894;
             color: white;
             position: absolute;
             font-size: 2em;
             padding: 30px 80px;
-            /* Taille fixe identique pour les deux */
             width: 240px;
             height: 90px;
             display: flex;
             align-items: center;
             justify-content: center;
             transform-origin: center;
+            z-index: 20;
         }
 
         #oui1 { top: 20%; left: 20%; }
@@ -118,6 +138,7 @@
             bottom: 10%;
             opacity: 0.7;
             transform: scale(0.8);
+            z-index: 20;
         }
 
         .btn-non:hover {
@@ -125,17 +146,17 @@
             transform: scale(0.9);
         }
 
-        /* Photos qui apparaissent */
+        /* Photos qui apparaissent au clic */
         .photo-popup {
             position: fixed;
-            width: 150px;
-            height: 150px;
-            border-radius: 15px;
+            width: 200px;
+            height: 200px;
+            border-radius: 20px;
             object-fit: cover;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 3px solid white;
-            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 5;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border: 4px solid white;
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 50;
         }
 
         @keyframes popIn {
@@ -192,12 +213,13 @@
             color: #d63031;
             font-weight: bold;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 20;
         }
     </style>
 </head>
 <body>
-    <!-- Cœurs flottants -->
-    <div class="hearts" id="hearts"></div>
+    <!-- Photos flottantes en fond -->
+    <div class="floating-photos" id="floatingPhotos"></div>
 
     <div class="counter">Tentatives : <span id="count">0</span>/5</div>
 
@@ -219,36 +241,78 @@
     </div>
 
     <script>
-        // Créer les cœurs flottants
-        function createHearts() {
-            const container = document.getElementById('hearts');
-            for (let i = 0; i < 20; i++) {
-                const heart = document.createElement('div');
-                heart.className = 'heart';
-                heart.innerHTML = '❤️';
-                heart.style.left = Math.random() * 100 + '%';
-                heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
-                heart.style.animationDelay = Math.random() * 5 + 's';
-                container.appendChild(heart);
+        // Tableau de vos photos
+        const couplePhotos = [
+            '/mnt/kimi/upload/IMG_4997-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5185-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5473-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5474-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_4450-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_4607-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_4887-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_4904-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5482-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_4973-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_4984-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5268-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5472-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5476-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5349-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5359-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5465-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5468-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5471-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5478-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5463-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5458-removebg-preview.png',
+            '/mnt/kimi/upload/IMG_5457-removebg-preview.png'
+        ];
+
+        // Créer les photos flottantes
+        function createFloatingPhotos() {
+            const container = document.getElementById('floatingPhotos');
+            const photoCount = 15; // Nombre de photos visibles simultanément
+            
+            for (let i = 0; i < photoCount; i++) {
+                const img = document.createElement('img');
+                // Choisir une photo aléatoire du tableau
+                const randomPhoto = couplePhotos[Math.floor(Math.random() * couplePhotos.length)];
+                img.src = randomPhoto;
+                img.className = 'floating-photo';
+                
+                // Position aléatoire sur l'axe X (10% à 90% de l'écran)
+                img.style.left = (10 + Math.random() * 80) + '%';
+                
+                // Durée d'animation aléatoire entre 8 et 15 secondes
+                img.style.animationDuration = (8 + Math.random() * 7) + 's';
+                
+                // Délai aléatoire pour que ça ne commence pas tous en même temps
+                img.style.animationDelay = (Math.random() * 10) + 's';
+                
+                // Taille aléatoire entre 100px et 150px
+                const size = 100 + Math.random() * 50;
+                img.style.width = size + 'px';
+                img.style.height = size + 'px';
+                
+                container.appendChild(img);
             }
         }
-        createHearts();
+        
+        createFloatingPhotos();
 
         // Variables du jeu
         let nonClicks = 0;
-        const maxClicks = 5;
         const ouiButtons = document.querySelectorAll('.btn-oui');
         const nonButton = document.getElementById('non');
-        const gameArea = document.getElementById('gameArea');
         const counter = document.getElementById('count');
 
-        // URLs des photos (à remplacer par tes propres URLs)
-        const photos = [
-            'https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?w=300&h=300&fit=crop', // Couple
-            'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=300&h=300&fit=crop', // Cœur
-            'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=300&h=300&fit=crop', // Amour
-            'https://images.unsplash.com/photo-1529634597503-139d3726fed5?w=300&h=300&fit=crop', // Rose
-            'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=300&h=300&fit=crop'  // Surprise
+        // Photos qui apparaissent au clic sur NON (sélection de 5 photos différentes)
+        const clickPhotos = [
+            '/mnt/kimi/upload/IMG_5473-removebg-preview.png', // Photo couple 1
+            '/mnt/kimi/upload/IMG_5474-removebg-preview.png', // Photo couple 2
+            '/mnt/kimi/upload/IMG_4904-removebg-preview.png', // Photo couple 3
+            '/mnt/kimi/upload/IMG_5471-removebg-preview.png', // Photo couple 4
+            '/mnt/kimi/upload/IMG_4450-removebg-preview.png'  // Photo couple 5
         ];
 
         // Faire fuir les boutons OUI - VERSION ULTRA RAPIDE
@@ -262,22 +326,18 @@
                 const distY = e.clientY - btnY;
                 const distance = Math.sqrt(distX * distX + distY * distY);
                 
-                // Détection à 250px (au lieu de 150px) + fuite de 250px (au lieu de 100px)
                 if (distance < 250) {
-                    // Calculer la direction de fuite (vecteur normalisé * distance de fuite)
-                    const escapeDistance = 250; // Distance de fuite augmentée
+                    const escapeDistance = 250;
                     const moveX = (distX / distance) * -escapeDistance;
                     const moveY = (distY / distance) * -escapeDistance;
                     
                     let newX = rect.left + moveX;
                     let newY = rect.top + moveY;
                     
-                    // Limites de l'écran avec marge de sécurité
                     const margin = 10;
                     newX = Math.max(margin, Math.min(window.innerWidth - rect.width - margin, newX));
                     newY = Math.max(margin, Math.min(window.innerHeight - rect.height - margin, newY));
                     
-                    // Transition ultra rapide (0.1s au lieu de 0.2s)
                     btn.style.position = 'fixed';
                     btn.style.left = newX + 'px';
                     btn.style.top = newY + 'px';
@@ -291,35 +351,38 @@
             nonClicks++;
             counter.textContent = nonClicks;
             
-            // Ajouter une photo
             if (nonClicks <= 5) {
                 const img = document.createElement('img');
-                img.src = photos[nonClicks - 1];
+                img.src = clickPhotos[nonClicks - 1];
                 img.className = 'photo-popup';
                 
-                // Position aléatoire autour du clic
-                const offsetX = (Math.random() - 0.5) * 200;
-                const offsetY = (Math.random() - 0.5) * 200;
-                img.style.left = (e.clientX + offsetX - 75) + 'px';
-                img.style.top = (e.clientY + offsetY - 75) + 'px';
-                img.style.transform = `rotate(${(Math.random() - 0.5) * 30}deg)`;
+                const offsetX = (Math.random() - 0.5) * 300;
+                const offsetY = (Math.random() - 0.5) * 300;
+                
+                let finalX = e.clientX + offsetX - 100;
+                let finalY = e.clientY + offsetY - 100;
+                
+                // Empêcher les photos de sortir de l'écran
+                finalX = Math.max(20, Math.min(window.innerWidth - 220, finalX));
+                finalY = Math.max(20, Math.min(window.innerHeight - 220, finalY));
+                
+                img.style.left = finalX + 'px';
+                img.style.top = finalY + 'px';
+                img.style.transform = `rotate(${(Math.random() - 0.5) * 40}deg)`;
                 
                 document.body.appendChild(img);
                 
-                // Animation de rebond du bouton
                 nonButton.style.transform = 'scale(0.7)';
                 setTimeout(() => {
                     nonButton.style.transform = 'scale(0.8)';
                 }, 200);
             }
             
-            // 5ème clic = message final
             if (nonClicks >= 5) {
                 setTimeout(() => {
                     document.getElementById('finalMessage').style.display = 'flex';
-                    // Confettis
-                    for (let i = 0; i < 50; i++) {
-                        setTimeout(createConfetti, i * 50);
+                    for (let i = 0; i < 100; i++) {
+                        setTimeout(createConfetti, i * 30);
                     }
                 }, 800);
             }
@@ -327,32 +390,29 @@
 
         // Fonction confettis
         function createConfetti() {
-            const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff'];
+            const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#ffffff'];
             const confetti = document.createElement('div');
             confetti.style.position = 'fixed';
-            confetti.style.width = '10px';
-            confetti.style.height = '10px';
+            confetti.style.width = Math.random() * 10 + 5 + 'px';
+            confetti.style.height = Math.random() * 10 + 5 + 'px';
             confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
             confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.top = '-10px';
-            confetti.style.borderRadius = '50%';
+            confetti.style.top = '-20px';
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
             confetti.style.zIndex = '99';
-            confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear`;
+            confetti.style.animation = `fall ${Math.random() * 4 + 3}s linear`;
             document.body.appendChild(confetti);
             
-            setTimeout(() => confetti.remove(), 5000);
+            setTimeout(() => confetti.remove(), 7000);
         }
 
-        // Ajouter animation de chute pour confettis
         const style = document.createElement('style');
         style.textContent = `
             @keyframes fall {
-                to { transform: translateY(100vh) rotate(360deg); }
+                to { transform: translateY(100vh) rotate(720deg); }
             }
         `;
         document.head.appendChild(style);
     </script>
 </body>
 </html>
-
-
