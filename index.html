@@ -128,6 +128,7 @@
         #oui1 { top: 20%; left: 20%; }
         #oui2 { bottom: 20%; right: 20%; }
 
+        /* BOUTON NON TOUJOURS CLIQUABLE */
         .btn-non {
             background: #636e72;
             color: white;
@@ -137,7 +138,8 @@
             bottom: 10%;
             opacity: 0.7;
             transform: scale(0.8);
-            z-index: 20;
+            z-index: 1000; /* SUPÉRIEUR AUX PHOTOS */
+            pointer-events: auto; /* ASSURE QU'IL RESTE CLIQUABLE */
         }
 
         .btn-non:hover {
@@ -145,16 +147,17 @@
             transform: scale(0.9);
         }
 
+        /* PHOTOS QUI APPARAISSENT - POSITIONS FIXES SUR LES CÔTÉS */
         .photo-popup {
             position: fixed;
-            width: 200px;
-            height: 200px;
+            width: 180px; /* Légèrement plus petit */
+            height: 180px;
             border-radius: 20px;
             object-fit: cover;
             box-shadow: 0 15px 35px rgba(0,0,0,0.3);
             border: 4px solid white;
             animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 50;
+            z-index: 100; /* INFÉRIEUR AU BOUTON NON */
         }
 
         @keyframes popIn {
@@ -162,7 +165,6 @@
             100% { transform: scale(1) rotate(0deg); }
         }
 
-        /* Message final */
         .final-message {
             display: none;
             position: fixed;
@@ -204,7 +206,6 @@
             50% { transform: scale(1.3); }
         }
 
-        /* IMAGE APRÈS LE "!" */
         .final-image {
             width: 250px;
             height: 250px;
@@ -245,12 +246,10 @@
         </div>
     </div>
 
-    <!-- Message final avec l'image après le "!" -->
     <div class="final-message" id="finalMessage">
         <div class="heart-big">❤️</div>
         <h2>Tu n'es pas ma Valentine...<br>mais ma Maica !</h2>
         
-        <!-- L'IMAGE S'AFFICHE ICI, APRÈS LE "!" -->
         <img src="https://raw.githubusercontent.com/Vaaronzo/donotclick/main/montagne.jpg" 
              class="final-image" 
              alt="Maica"
@@ -326,6 +325,15 @@
             BASE_URL + 'IMG_4450-removebg-preview.png'
         ];
 
+        // POSITIONS FIXES POUR LES 5 PHOTOS (SUR LES CÔTÉS, PAS AU CENTRE)
+        const photoPositions = [
+            { x: 50, y: 150 },   // Haut gauche
+            { x: window.innerWidth - 230, y: 150 },  // Haut droite
+            { x: 50, y: window.innerHeight / 2 - 90 }, // Milieu gauche
+            { x: window.innerWidth - 230, y: window.innerHeight / 2 - 90 }, // Milieu droite
+            { x: window.innerWidth / 2 - 90, y: 100 } // Haut centre (mais pas sur le bouton)
+        ];
+
         createFloatingPhotos();
 
         document.addEventListener('mousemove', (e) => {
@@ -367,21 +375,14 @@
                 img.src = clickPhotos[nonClicks - 1];
                 img.className = 'photo-popup';
                 
-                const offsetX = (Math.random() - 0.5) * 300;
-                const offsetY = (Math.random() - 0.5) * 300;
-                
-                let finalX = e.clientX + offsetX - 100;
-                let finalY = e.clientY + offsetY - 100;
-                
-                finalX = Math.max(20, Math.min(window.innerWidth - 220, finalX));
-                finalY = Math.max(20, Math.min(window.innerHeight - 220, finalY));
-                
-                img.style.left = finalX + 'px';
-                img.style.top = finalY + 'px';
-                img.style.transform = `rotate(${(Math.random() - 0.5) * 40}deg)`;
+                // POSITION FIXE SUR LES CÔTÉS (pas aléatoire, donc pas sur le bouton)
+                const pos = photoPositions[nonClicks - 1];
+                img.style.left = pos.x + 'px';
+                img.style.top = pos.y + 'px';
+                img.style.transform = `rotate(${(Math.random() - 0.5) * 20}deg)`;
                 
                 img.onerror = function() {
-                    this.src = 'https://via.placeholder.com/200x200/ff6b6b/ffffff?text=❤️';
+                    this.src = 'https://via.placeholder.com/180x180/ff6b6b/ffffff?text=❤️';
                 };
                 
                 document.body.appendChild(img);
@@ -429,4 +430,3 @@
     </script>
 </body>
 </html>
-
