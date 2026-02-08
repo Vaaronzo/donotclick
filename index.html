@@ -19,7 +19,6 @@
             position: relative;
         }
 
-        /* Photos flottantes en arrière-plan */
         .floating-photos {
             position: fixed;
             width: 100%;
@@ -163,6 +162,7 @@
             100% { transform: scale(1) rotate(0deg); }
         }
 
+        /* Message final */
         .final-message {
             display: none;
             position: fixed;
@@ -176,6 +176,8 @@
             align-items: center;
             flex-direction: column;
             animation: fadeIn 1s;
+            overflow-y: auto;
+            padding: 20px;
         }
 
         @keyframes fadeIn {
@@ -185,20 +187,33 @@
 
         .final-message h2 {
             color: white;
-            font-size: 3em;
+            font-size: 2.5em;
             text-align: center;
             padding: 20px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .final-message .heart-big {
-            font-size: 100px;
+            font-size: 80px;
             animation: heartbeat 1s infinite;
+            margin-bottom: 10px;
         }
 
         @keyframes heartbeat {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.3); }
+        }
+
+        /* IMAGE APRÈS LE "!" */
+        .final-image {
+            width: 250px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 4px solid white;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            animation: popIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         .counter {
@@ -230,17 +245,23 @@
         </div>
     </div>
 
+    <!-- Message final avec l'image après le "!" -->
     <div class="final-message" id="finalMessage">
         <div class="heart-big">❤️</div>
         <h2>Tu n'es pas ma Valentine...<br>mais ma Maica !</h2>
+        
+        <!-- L'IMAGE S'AFFICHE ICI, APRÈS LE "!" -->
+        <img src="https://raw.githubusercontent.com/Vaaronzo/donotclick/main/montagne.jpg" 
+             class="final-image" 
+             alt="Maica"
+             onerror="this.style.display='none'">
+        
         <p style="color: white; margin-top: 20px; font-size: 1.2em;">Je t'aime mon bb</p>
     </div>
 
     <script>
-        // BASE URL - Modifie avec ton vrai nom d'utilisateur si différent
         const BASE_URL = 'https://raw.githubusercontent.com/Vaaronzo/donotclick/main/';
         
-        // Toutes tes photos
         const allPhotos = [
             'IMG_4997-removebg-preview.png',
             'IMG_5185-removebg-preview.png',
@@ -267,7 +288,6 @@
             'IMG_5457-removebg-preview.png'
         ];
 
-        // Créer les photos flottantes en fond
         function createFloatingPhotos() {
             const container = document.getElementById('floatingPhotos');
             
@@ -285,7 +305,6 @@
                 img.style.width = size + 'px';
                 img.style.height = size + 'px';
                 
-                // Gestion d'erreur si l'image ne charge pas
                 img.onerror = function() {
                     this.style.display = 'none';
                 };
@@ -294,13 +313,11 @@
             }
         }
 
-        // Variables du jeu
         let nonClicks = 0;
         const ouiButtons = document.querySelectorAll('.btn-oui');
         const nonButton = document.getElementById('non');
         const counter = document.getElementById('count');
 
-        // Photos spécifiques pour les 5 clics
         const clickPhotos = [
             BASE_URL + 'IMG_5473-removebg-preview.png',
             BASE_URL + 'IMG_5474-removebg-preview.png',
@@ -309,10 +326,8 @@
             BASE_URL + 'IMG_4450-removebg-preview.png'
         ];
 
-        // Initialisation
         createFloatingPhotos();
 
-        // Faire fuir les boutons OUI
         document.addEventListener('mousemove', (e) => {
             ouiButtons.forEach(btn => {
                 const rect = btn.getBoundingClientRect();
@@ -343,7 +358,6 @@
             });
         });
 
-        // Clic sur NON
         nonButton.addEventListener('click', (e) => {
             nonClicks++;
             counter.textContent = nonClicks;
