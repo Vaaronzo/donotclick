@@ -72,7 +72,7 @@
         }
 
         h1 {
-            font-size: 3em;
+            font-size: 2.5em;
             color: #d63031;
             text-align: center;
             margin-bottom: 50px;
@@ -146,7 +146,6 @@
             transform: scale(0.9);
         }
 
-        /* Photos qui apparaissent au clic */
         .photo-popup {
             position: fixed;
             width: 200px;
@@ -164,7 +163,6 @@
             100% { transform: scale(1) rotate(0deg); }
         }
 
-        /* Message final */
         .final-message {
             display: none;
             position: fixed;
@@ -218,7 +216,6 @@
     </style>
 </head>
 <body>
-    <!-- Photos flottantes en fond -->
     <div class="floating-photos" id="floatingPhotos"></div>
 
     <div class="counter">Tentatives : <span id="count">0</span>/5</div>
@@ -233,7 +230,6 @@
         </div>
     </div>
 
-    <!-- Message final -->
     <div class="final-message" id="finalMessage">
         <div class="heart-big">❤️</div>
         <h2>Tu n'es pas ma Valentine...<br>mais ma Maica !</h2>
@@ -241,64 +237,62 @@
     </div>
 
     <script>
-        // Tableau de vos photos
-        const couplePhotos = [
-            '/mnt/kimi/upload/IMG_4997-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5185-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5473-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5474-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_4450-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_4607-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_4887-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_4904-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5482-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_4973-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_4984-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5268-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5472-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5476-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5349-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5359-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5465-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5468-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5471-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5478-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5463-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5458-removebg-preview.png',
-            '/mnt/kimi/upload/IMG_5457-removebg-preview.png'
+        // BASE URL - Modifie avec ton vrai nom d'utilisateur si différent
+        const BASE_URL = 'https://raw.githubusercontent.com/Vaaronzo/donotclick/main/';
+        
+        // Toutes tes photos
+        const allPhotos = [
+            'IMG_4997-removebg-preview.png',
+            'IMG_5185-removebg-preview.png',
+            'IMG_5473-removebg-preview.png',
+            'IMG_5474-removebg-preview.png',
+            'IMG_4450-removebg-preview.png',
+            'IMG_4607-removebg-preview.png',
+            'IMG_4887-removebg-preview.png',
+            'IMG_4904-removebg-preview.png',
+            'IMG_5482-removebg-preview.png',
+            'IMG_4973-removebg-preview.png',
+            'IMG_4984-removebg-preview.png',
+            'IMG_5268-removebg-preview.png',
+            'IMG_5472-removebg-preview.png',
+            'IMG_5476-removebg-preview.png',
+            'IMG_5349-removebg-preview.png',
+            'IMG_5359-removebg-preview.png',
+            'IMG_5465-removebg-preview.png',
+            'IMG_5468-removebg-preview.png',
+            'IMG_5471-removebg-preview.png',
+            'IMG_5478-removebg-preview.png',
+            'IMG_5463-removebg-preview.png',
+            'IMG_5458-removebg-preview.png',
+            'IMG_5457-removebg-preview.png'
         ];
 
-        // Créer les photos flottantes
+        // Créer les photos flottantes en fond
         function createFloatingPhotos() {
             const container = document.getElementById('floatingPhotos');
-            const photoCount = 15; // Nombre de photos visibles simultanément
             
-            for (let i = 0; i < photoCount; i++) {
+            for (let i = 0; i < 15; i++) {
                 const img = document.createElement('img');
-                // Choisir une photo aléatoire du tableau
-                const randomPhoto = couplePhotos[Math.floor(Math.random() * couplePhotos.length)];
-                img.src = randomPhoto;
+                const randomFile = allPhotos[Math.floor(Math.random() * allPhotos.length)];
+                img.src = BASE_URL + randomFile;
                 img.className = 'floating-photo';
                 
-                // Position aléatoire sur l'axe X (10% à 90% de l'écran)
                 img.style.left = (10 + Math.random() * 80) + '%';
-                
-                // Durée d'animation aléatoire entre 8 et 15 secondes
                 img.style.animationDuration = (8 + Math.random() * 7) + 's';
-                
-                // Délai aléatoire pour que ça ne commence pas tous en même temps
                 img.style.animationDelay = (Math.random() * 10) + 's';
                 
-                // Taille aléatoire entre 100px et 150px
                 const size = 100 + Math.random() * 50;
                 img.style.width = size + 'px';
                 img.style.height = size + 'px';
                 
+                // Gestion d'erreur si l'image ne charge pas
+                img.onerror = function() {
+                    this.style.display = 'none';
+                };
+                
                 container.appendChild(img);
             }
         }
-        
-        createFloatingPhotos();
 
         // Variables du jeu
         let nonClicks = 0;
@@ -306,16 +300,19 @@
         const nonButton = document.getElementById('non');
         const counter = document.getElementById('count');
 
-        // Photos qui apparaissent au clic sur NON (sélection de 5 photos différentes)
+        // Photos spécifiques pour les 5 clics
         const clickPhotos = [
-            '/mnt/kimi/upload/IMG_5473-removebg-preview.png', // Photo couple 1
-            '/mnt/kimi/upload/IMG_5474-removebg-preview.png', // Photo couple 2
-            '/mnt/kimi/upload/IMG_4904-removebg-preview.png', // Photo couple 3
-            '/mnt/kimi/upload/IMG_5471-removebg-preview.png', // Photo couple 4
-            '/mnt/kimi/upload/IMG_4450-removebg-preview.png'  // Photo couple 5
+            BASE_URL + 'IMG_5473-removebg-preview.png',
+            BASE_URL + 'IMG_5474-removebg-preview.png',
+            BASE_URL + 'IMG_4904-removebg-preview.png',
+            BASE_URL + 'IMG_5471-removebg-preview.png',
+            BASE_URL + 'IMG_4450-removebg-preview.png'
         ];
 
-        // Faire fuir les boutons OUI - VERSION ULTRA RAPIDE
+        // Initialisation
+        createFloatingPhotos();
+
+        // Faire fuir les boutons OUI
         document.addEventListener('mousemove', (e) => {
             ouiButtons.forEach(btn => {
                 const rect = btn.getBoundingClientRect();
@@ -362,13 +359,16 @@
                 let finalX = e.clientX + offsetX - 100;
                 let finalY = e.clientY + offsetY - 100;
                 
-                // Empêcher les photos de sortir de l'écran
                 finalX = Math.max(20, Math.min(window.innerWidth - 220, finalX));
                 finalY = Math.max(20, Math.min(window.innerHeight - 220, finalY));
                 
                 img.style.left = finalX + 'px';
                 img.style.top = finalY + 'px';
                 img.style.transform = `rotate(${(Math.random() - 0.5) * 40}deg)`;
+                
+                img.onerror = function() {
+                    this.src = 'https://via.placeholder.com/200x200/ff6b6b/ffffff?text=❤️';
+                };
                 
                 document.body.appendChild(img);
                 
@@ -388,7 +388,6 @@
             }
         });
 
-        // Fonction confettis
         function createConfetti() {
             const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#ffffff'];
             const confetti = document.createElement('div');
